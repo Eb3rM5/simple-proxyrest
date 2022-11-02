@@ -5,9 +5,9 @@ import java.util.List;
 
 import proxyrest.handler.annotation.AnnotationHandler;
 
-public class ClassAnnotationProcessor extends SingleSourceAnnotationProcessor<Class<?>>{
+public class ClassAnnotationProcessor<O> extends SingleSourceAnnotationProcessor<Class<?>, O>{
 
-	public ClassAnnotationProcessor(List<AnnotationHandler<Class<?>, ?>> handlers) {
+	public ClassAnnotationProcessor(List<AnnotationHandler<Class<?>, ?, O>> handlers) {
 		super(handlers, false);
 	}
 

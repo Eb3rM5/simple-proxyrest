@@ -8,55 +8,54 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import proxyrest.client.AbstractHttpRequest;
 import proxyrest.handler.annotation.AnnotationHandler;
 
-public abstract class AnnotationProcessor<T extends AnnotatedElement> {
+public abstract class AnnotationProcessor<T extends AnnotatedElement, O> {
 
 	private final boolean useMethodArguments;
-	private final Map<String, AnnotationHandler<T, ? extends Annotation>> handlers;
+	private final Map<String, AnnotationHandler<T, ? extends Annotation, O>> handlers;
 	
-	public AnnotationProcessor(boolean useMethodArguments) {
+	protected AnnotationProcessor(boolean useMethodArguments) {
 		handlers = new HashMap<>();
 		this.useMethodArguments = useMethodArguments;
 	}
 	
-	public AnnotationProcessor(List<AnnotationHandler<T, ? extends Annotation>> handlers, boolean useMethodArguments) {
+	protected AnnotationProcessor(List<AnnotationHandler<T, ? extends Annotation, O>> handlers, boolean useMethodArguments) {
 		this(useMethodArguments);
 		if (handlers != null) {
 			this.handlers.putAll(handlers.parallelStream().collect(Collectors.toMap(handler -> handler.getAnnotationType().getName(), handler -> handler)));
 		}
 	}
 	
-	public void process(Method method, AbstractHttpRequest<?> request, Object[] args) {
+	public void process(Method method, O object, Object[] args) {
 		if (!useMethodArguments) args = null;
 		var sources = getSources(method);
 		if (sources != null) {
 			for (T source : sources) {
-				processSource(source, request, args);
+				processSource(source, object, args);
 			}
 		}
 	}
 	
-	protected void processSource(T source, AbstractHttpRequest<?> request, Object[] args) {
+	protected void processSource(T source, O object, Object[] args) {
 		if (source != null) {
 			final Annotation[] annotations = source.getDeclaredAnnotations();
 			for (int i = 0; i < annotations.length; i++) {
 				Annotation annotation = annotations[i];
 				var annotationHandler = handlers.get(getAnnotationKey(annotation));
 				if (annotationHandler != null) {
-					handleAnnotation(i, annotation, annotationHandler, source, request, args);
+					handleAnnotation(i, annotation, annotationHandler, source, object, args);
 				}
 			}
 		}
 	}
 	
-	private <A extends Annotation> void handleAnnotation(int index, Annotation annotation, AnnotationHandler<T, A> handler, T source, AbstractHttpRequest<?> request, Object[] args) {
+	private <A extends Annotation> void handleAnnotation(int index, Annotation annotation, AnnotationHandler<T, A, O> handler, T source, O object, Object[] args) {
 		A typesafeAnnotation = handler.getAnnotationType().cast(annotation);
-		handler.handleAnnotation(index, typesafeAnnotation, source, request, args);
+		handler.handleAnnotation(index, typesafeAnnotation, source, object, args);
 	}
 	
-	public void addHandler(Annotation annotation, AnnotationHandler<T, ? extends Annotation> handler) {
+	public void addHandler(Annotation annotation, AnnotationHandler<T, ? extends Annotation, O> handler) {
 		handlers.put(getAnnotationKey(annotation), handler);
 	}
 	

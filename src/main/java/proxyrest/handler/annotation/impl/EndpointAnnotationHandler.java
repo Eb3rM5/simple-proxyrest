@@ -4,7 +4,7 @@ import proxyrest.advice.api.Endpoint;
 import proxyrest.client.AbstractHttpRequest;
 import proxyrest.handler.annotation.ClassAnnotationHandler;
 
-public class EndpointAnnotationHandler implements ClassAnnotationHandler<Endpoint> {
+public class EndpointAnnotationHandler implements ClassAnnotationHandler<Endpoint, AbstractHttpRequest<?>> {
 
 	@Override
 	public void handleAnnotation(int index, Endpoint annotation, Class<?> source, AbstractHttpRequest<?> request, Object[] args) {

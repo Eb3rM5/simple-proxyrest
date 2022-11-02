@@ -6,7 +6,7 @@ import proxyrest.advice.route.GetMapping;
 import proxyrest.client.AbstractHttpRequest;
 import proxyrest.handler.annotation.MethodAnnotationHandler;
 
-public class GetMappingAnnotationHandler implements MethodAnnotationHandler<GetMapping> {
+public class GetMappingAnnotationHandler implements MethodAnnotationHandler<GetMapping, AbstractHttpRequest<?>> {
 
 	@Override
 	public void handleAnnotation(int index, GetMapping annotation, Method source, AbstractHttpRequest<?> request, Object[] args) {

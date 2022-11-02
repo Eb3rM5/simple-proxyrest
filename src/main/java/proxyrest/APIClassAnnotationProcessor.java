@@ -2,10 +2,11 @@ package proxyrest;
 
 import java.util.Arrays;
 
+import proxyrest.client.AbstractHttpRequest;
 import proxyrest.handler.annotation.impl.EndpointAnnotationHandler;
 import proxyrest.handler.annotation.processor.ClassAnnotationProcessor;
 
-public class APIClassAnnotationProcessor extends ClassAnnotationProcessor {
+public class APIClassAnnotationProcessor extends ClassAnnotationProcessor<AbstractHttpRequest<?>> {
 
 	public APIClassAnnotationProcessor() {
 		super(Arrays.asList(

@@ -6,7 +6,7 @@ import proxyrest.advice.param.PathParam;
 import proxyrest.client.AbstractHttpRequest;
 import proxyrest.handler.annotation.ParameterAnnotationHandler;
 
-public class PathParamAnnotationHandler implements ParameterAnnotationHandler<PathParam> {
+public class PathParamAnnotationHandler implements ParameterAnnotationHandler<PathParam, AbstractHttpRequest<?>> {
 
 	@Override
 	public void handleAnnotation(int index, PathParam annotation, Parameter source, AbstractHttpRequest<?> request, Object[] args) {

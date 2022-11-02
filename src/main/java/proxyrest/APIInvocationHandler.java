@@ -17,7 +17,7 @@ public class APIInvocationHandler implements InvocationHandler {
 
 	private final AbstractHttpClient<? extends AbstractHttpRequest<?>, ? extends AbstractHttpResponse<?, ?>> httpClient;
 	private final ResponseHandlerFactory responseHandlerFactory;
-	private final List<AnnotationProcessor<?>> annotationProcessors;
+	private final List<AnnotationProcessor<?, AbstractHttpRequest<?>>> requestAnnotationProcessors;
 	
 	public APIInvocationHandler(AbstractHttpClient<? extends AbstractHttpRequest<?>, ? extends AbstractHttpResponse<?, ?>> httpClient) {
 		this(httpClient, new JSONHttpResponseHandler());
@@ -26,7 +26,7 @@ public class APIInvocationHandler implements InvocationHandler {
 	public APIInvocationHandler(AbstractHttpClient<? extends AbstractHttpRequest<?>, ? extends AbstractHttpResponse<?, ?>> httpClient, ResponseHandler defaultResponseHandler) {
 		this.httpClient = httpClient;
 		this.responseHandlerFactory = new ResponseHandlerFactory(defaultResponseHandler);
-		this.annotationProcessors = getAnnotationProcessors();
+		this.requestAnnotationProcessors = getRequestAnnotationProcessors();
 	}
 	
 	@Override
@@ -42,7 +42,7 @@ public class APIInvocationHandler implements InvocationHandler {
 	private <I extends AbstractHttpRequest<?>, O extends AbstractHttpResponse<?, I>> Object handleInvocation(Object proxy, Method method, Object[] args, AbstractHttpClient<I, O> httpClient) throws Exception {
 		var request = httpClient.createEmptyRequest();
 		
-		for (var annotationProcessor : annotationProcessors) {
+		for (var annotationProcessor : requestAnnotationProcessors) {
 			annotationProcessor.process(method, request, args);
 		}
 		
@@ -58,7 +58,7 @@ public class APIInvocationHandler implements InvocationHandler {
 		return responseHandler.handleResponse(response, responseHandler, method, method.getReturnType(), args);
 	}
 	
-	public List<AnnotationProcessor<?>> getAnnotationProcessors(){
+	public List<AnnotationProcessor<?, AbstractHttpRequest<?>>> getRequestAnnotationProcessors(){
 		return Arrays.asList(
 				new APIClassAnnotationProcessor(),
 				new APIMethodAnnotationProcessor(),

@@ -7,7 +7,7 @@ import proxyrest.client.AbstractHttpRequest;
 import proxyrest.handler.annotation.MethodAnnotationHandler;
 import proxyrest.handler.response.JSONPropertyHttpResponseHandler;
 
-public class JsonPropertyMappingAnnotationHandler implements MethodAnnotationHandler<JsonPropertyMapping> {
+public class JsonPropertyMappingAnnotationHandler implements MethodAnnotationHandler<JsonPropertyMapping, AbstractHttpRequest<?>> {
 
 	public static final JSONPropertyHttpResponseHandler RESPONSE_HANDLER = new JSONPropertyHttpResponseHandler();
 	

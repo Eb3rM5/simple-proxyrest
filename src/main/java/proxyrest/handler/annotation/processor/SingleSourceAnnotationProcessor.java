@@ -8,13 +8,13 @@ import java.util.List;
 import proxyrest.handler.annotation.AnnotationHandler;
 import proxyrest.util.ArrayUtils;
 
-public abstract class SingleSourceAnnotationProcessor<T extends AnnotatedElement> extends AnnotationProcessor<T> {
+public abstract class SingleSourceAnnotationProcessor<T extends AnnotatedElement, O> extends AnnotationProcessor<T, O> {
 
 	public SingleSourceAnnotationProcessor(boolean useMethodArguments) {
 		super(useMethodArguments);
 	}
 	
-	public SingleSourceAnnotationProcessor(List<AnnotationHandler<T, ? extends Annotation>> handlers, boolean useMethodArguments) {
+	public SingleSourceAnnotationProcessor(List<AnnotationHandler<T, ? extends Annotation, O>> handlers, boolean useMethodArguments) {
 		super(handlers, useMethodArguments);
 	}
 	

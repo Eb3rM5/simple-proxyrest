@@ -7,9 +7,9 @@ import java.util.List;
 
 import proxyrest.handler.annotation.AnnotationHandler;
 
-public class ParameterAnnotationProcessor extends AnnotationProcessor<Parameter> {
+public class ParameterAnnotationProcessor<O> extends AnnotationProcessor<Parameter, O> {
 
-	public ParameterAnnotationProcessor(List<AnnotationHandler<Parameter, ? extends Annotation>> handlers) {
+	public ParameterAnnotationProcessor(List<AnnotationHandler<Parameter, ? extends Annotation, O>> handlers) {
 		super(handlers, true);
 	}
 	
