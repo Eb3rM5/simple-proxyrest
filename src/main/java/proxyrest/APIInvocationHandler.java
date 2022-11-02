@@ -15,15 +15,15 @@ import proxyrest.handler.response.ResponseHandlerFactory;
 
 public class APIInvocationHandler implements InvocationHandler {
 
-	private final AbstractHttpClient<? extends AbstractHttpRequest<?>, ? extends AbstractHttpResponse<?>> httpClient;
+	private final AbstractHttpClient<? extends AbstractHttpRequest<?>, ? extends AbstractHttpResponse<?, ?>> httpClient;
 	private final ResponseHandlerFactory responseHandlerFactory;
 	private final List<AnnotationProcessor<?>> annotationProcessors;
 	
-	public APIInvocationHandler(AbstractHttpClient<? extends AbstractHttpRequest<?>, ? extends AbstractHttpResponse<?>> httpClient) {
+	public APIInvocationHandler(AbstractHttpClient<? extends AbstractHttpRequest<?>, ? extends AbstractHttpResponse<?, ?>> httpClient) {
 		this(httpClient, new JSONHttpResponseHandler());
 	}
 	
-	public APIInvocationHandler(AbstractHttpClient<? extends AbstractHttpRequest<?>, ? extends AbstractHttpResponse<?>> httpClient, ResponseHandler defaultResponseHandler) {
+	public APIInvocationHandler(AbstractHttpClient<? extends AbstractHttpRequest<?>, ? extends AbstractHttpResponse<?, ?>> httpClient, ResponseHandler defaultResponseHandler) {
 		this.httpClient = httpClient;
 		this.responseHandlerFactory = new ResponseHandlerFactory(defaultResponseHandler);
 		this.annotationProcessors = getAnnotationProcessors();
@@ -39,7 +39,7 @@ public class APIInvocationHandler implements InvocationHandler {
 		};
 	}
 	
-	private <I extends AbstractHttpRequest<?>, O extends AbstractHttpResponse<?>> Object handleInvocation(Object proxy, Method method, Object[] args, AbstractHttpClient<I, O> httpClient) throws Exception {
+	private <I extends AbstractHttpRequest<?>, O extends AbstractHttpResponse<?, I>> Object handleInvocation(Object proxy, Method method, Object[] args, AbstractHttpClient<I, O> httpClient) throws Exception {
 		var request = httpClient.createEmptyRequest();
 		
 		for (var annotationProcessor : annotationProcessors) {
@@ -53,7 +53,7 @@ public class APIInvocationHandler implements InvocationHandler {
 		return null;
 	}
 	
-	protected Object handleResponse(AbstractHttpResponse<?> response, ResponseHandler responseHandler, Method method, Object[] args) {
+	protected Object handleResponse(AbstractHttpResponse<?, ?> response, ResponseHandler responseHandler, Method method, Object[] args) {
 		if (responseHandler == null) responseHandler = responseHandlerFactory.getDefaultResponseHandler();
 		return responseHandler.handleResponse(response, responseHandler, method, method.getReturnType(), args);
 	}

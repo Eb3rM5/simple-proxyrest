@@ -18,7 +18,7 @@ public class ApacheHttpClient implements AbstractHttpClient<ApacheHttpRequest, A
 	public ApacheHttpResponse request(ApacheHttpRequest request) {
 		try {
 			final var response = httpClient.execute(request.build());
-			return new ApacheHttpResponse(response);
+			return new ApacheHttpResponse(response, request);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;

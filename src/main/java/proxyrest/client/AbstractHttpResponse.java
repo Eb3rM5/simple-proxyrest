@@ -2,7 +2,7 @@ package proxyrest.client;
 
 import java.io.InputStream;
 
-public interface AbstractHttpResponse<T> {
+public interface AbstractHttpResponse<T, R extends AbstractHttpRequest<?>> {
 
 	int getStatusCode();
 	
@@ -11,6 +11,8 @@ public interface AbstractHttpResponse<T> {
 	InputStream openStream();
 	
 	T getClientResponse();
+	
+	R getRequest();
 	
 	default boolean isContentType(String expectedContentType) {
 		String contentType = getContentType();

@@ -26,7 +26,7 @@ public class JSONPropertyHttpResponseHandler implements ResponseHandler {
 	}
 	
 	@Override
-	public <T> T handleResponse(AbstractHttpResponse<?> response, Object proxy, Method method, Class<T> returnType, Object... args) {
+	public <T> T handleResponse(AbstractHttpResponse<?, ?> response, Object proxy, Method method, Class<T> returnType, Object... args) {
 		final String propertyPath = getProperty(method);
 		try (InputStream input = response.openStream()){
 			var json = mapper.readTree(input);

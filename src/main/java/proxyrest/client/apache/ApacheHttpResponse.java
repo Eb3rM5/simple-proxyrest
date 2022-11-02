@@ -11,12 +11,14 @@ import org.apache.hc.core5.http.ProtocolException;
 
 import proxyrest.client.AbstractHttpResponse;
 
-public class ApacheHttpResponse implements AbstractHttpResponse<HttpResponse> {
+public class ApacheHttpResponse implements AbstractHttpResponse<HttpResponse, ApacheHttpRequest> {
 
 	private final HttpResponse clientResponse;
+	private final ApacheHttpRequest request;
 	
-	public ApacheHttpResponse(final HttpResponse clientResponse) {
+	ApacheHttpResponse(final HttpResponse clientResponse, final ApacheHttpRequest request) {
 		this.clientResponse = clientResponse;
+		this.request = request;
 	}
 	
 	@Override
@@ -55,6 +57,11 @@ public class ApacheHttpResponse implements AbstractHttpResponse<HttpResponse> {
 	@Override
 	public HttpResponse getClientResponse() {
 		return clientResponse;
+	}
+
+	@Override
+	public ApacheHttpRequest getRequest() {
+		return request;
 	}
 	
 }

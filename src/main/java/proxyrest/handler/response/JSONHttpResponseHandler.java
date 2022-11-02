@@ -25,7 +25,7 @@ public class JSONHttpResponseHandler implements ResponseHandler {
 	}
 	
 	@Override
-	public <T> T handleResponse(AbstractHttpResponse<?> response, Object proxy, Method method, Class<T> returnType, Object... args) {
+	public <T> T handleResponse(AbstractHttpResponse<?, ?> response, Object proxy, Method method, Class<T> returnType, Object... args) {
 		try (InputStream input = response.openStream()) {
 			return mapper.readValue(input, returnType);
 		} catch (UnsupportedOperationException | IOException e) {

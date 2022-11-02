@@ -20,7 +20,7 @@ public class ApacheHttpRequest implements AbstractHttpRequest<ClassicHttpRequest
 	private URIBuilder uriBuilder;
 	private final List<Header> headers;
 	
-	public ApacheHttpRequest() {
+	ApacheHttpRequest() {
 		this.headers = new ArrayList<>();
 	}
 	
