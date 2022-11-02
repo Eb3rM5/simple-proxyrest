@@ -13,17 +13,17 @@ import proxyrest.handler.annotation.processor.AnnotationProcessor;
 import proxyrest.handler.response.JSONHttpResponseHandler;
 import proxyrest.handler.response.ResponseHandlerFactory;
 
-public class APIInvocationHandler implements InvocationHandler {
+public class APIInvocationHandler<C extends AbstractHttpClient<I, O>, I extends AbstractHttpRequest<?>, O extends AbstractHttpResponse<?, I>> implements InvocationHandler {
 
-	private final AbstractHttpClient<? extends AbstractHttpRequest<?>, ? extends AbstractHttpResponse<?, ?>> httpClient;
+	private final C httpClient;
 	private final ResponseHandlerFactory responseHandlerFactory;
 	private final List<AnnotationProcessor<?, AbstractHttpRequest<?>>> requestAnnotationProcessors;
 	
-	public APIInvocationHandler(AbstractHttpClient<? extends AbstractHttpRequest<?>, ? extends AbstractHttpResponse<?, ?>> httpClient) {
+	public APIInvocationHandler(C httpClient) {
 		this(httpClient, new JSONHttpResponseHandler());
 	}
 	
-	public APIInvocationHandler(AbstractHttpClient<? extends AbstractHttpRequest<?>, ? extends AbstractHttpResponse<?, ?>> httpClient, ResponseHandler defaultResponseHandler) {
+	public APIInvocationHandler(C httpClient, ResponseHandler defaultResponseHandler) {
 		this.httpClient = httpClient;
 		this.responseHandlerFactory = new ResponseHandlerFactory(defaultResponseHandler);
 		this.requestAnnotationProcessors = getRequestAnnotationProcessors();
@@ -33,14 +33,14 @@ public class APIInvocationHandler implements InvocationHandler {
 	public Object invoke(Object proxy, Method method, Object[] args) throws Exception {
 		final String methodName = method.getName();
 		return switch(methodName) {
-			default -> handleInvocation(proxy, method, args, httpClient);
+			default -> handleInvocation(proxy, method, args);
 			case "toString" -> toString();
 			case "hashCode" -> hashCode();
 		};
 	}
 	
-	private <I extends AbstractHttpRequest<?>, O extends AbstractHttpResponse<?, I>> Object handleInvocation(Object proxy, Method method, Object[] args, AbstractHttpClient<I, O> httpClient) throws Exception {
-		var request = httpClient.createEmptyRequest();
+	private Object handleInvocation(Object proxy, Method method, Object[] args) throws Exception {
+		I request = httpClient.createEmptyRequest();
 		
 		for (var annotationProcessor : requestAnnotationProcessors) {
 			annotationProcessor.process(method, request, args);
@@ -53,7 +53,7 @@ public class APIInvocationHandler implements InvocationHandler {
 		return null;
 	}
 	
-	protected Object handleResponse(AbstractHttpResponse<?, ?> response, ResponseHandler responseHandler, Method method, Object[] args) {
+	protected Object handleResponse(O response, ResponseHandler responseHandler, Method method, Object[] args) {
 		if (responseHandler == null) responseHandler = responseHandlerFactory.getDefaultResponseHandler();
 		return responseHandler.handleResponse(response, responseHandler, method, method.getReturnType(), args);
 	}
