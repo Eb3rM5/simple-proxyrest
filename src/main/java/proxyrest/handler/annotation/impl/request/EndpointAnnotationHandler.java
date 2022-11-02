@@ -1,4 +1,4 @@
-package proxyrest.handler.annotation.impl;
+package proxyrest.handler.annotation.impl.request;
 
 import proxyrest.advice.api.Endpoint;
 import proxyrest.client.AbstractHttpRequest;

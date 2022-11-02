@@ -1,4 +1,4 @@
-package proxyrest.handler.annotation.impl;
+package proxyrest.handler.annotation.impl.request;
 
 import java.lang.reflect.Method;
 
