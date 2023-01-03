@@ -59,7 +59,7 @@ public abstract class AnnotationProcessor<T extends AnnotatedElement, O> {
 		handlers.put(getAnnotationKey(annotation), handler);
 	}
 	
-	protected String getAnnotationKey(Annotation annotation){
+	protected String getAnnotationKey(Annotation annotation) {
 		return annotation.annotationType().getName();
 	}
 	
