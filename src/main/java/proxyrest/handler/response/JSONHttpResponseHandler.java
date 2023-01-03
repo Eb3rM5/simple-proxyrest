@@ -26,12 +26,16 @@ public class JSONHttpResponseHandler implements ResponseHandler {
 	
 	@Override
 	public <T> T handleResponse(AbstractHttpResponse<?, ?> response, Object proxy, Method method, Class<T> returnType, Object... args) {
-		try (InputStream input = response.openStream()) {
-			return mapper.readValue(input, returnType);
-		} catch (UnsupportedOperationException | IOException e) {
-			e.printStackTrace();
-			return null;
+		InputStream input = response.openStream();
+		if (input != null) {
+			try (input) {
+				return mapper.readValue(input, returnType);
+			} catch (UnsupportedOperationException | IOException e) {
+				e.printStackTrace();
+				return null;
+			}
 		}
+		return null;
 	}
 	
 	@Override
