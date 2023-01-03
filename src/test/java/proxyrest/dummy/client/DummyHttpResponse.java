@@ -1,8 +1,10 @@
-package proxyrest.client;
+package proxyrest.dummy.client;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+
+import proxyrest.client.AbstractHttpResponse;
 
 public class DummyHttpResponse implements AbstractHttpResponse<DummyHttpResponse, DummyHttpRequest> {
 

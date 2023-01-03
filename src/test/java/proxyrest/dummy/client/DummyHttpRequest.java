@@ -1,10 +1,11 @@
-package proxyrest.client;
+package proxyrest.dummy.client;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import proxyrest.client.AbstractHttpRequest;
 import proxyrest.handler.ResponseHandler;
 
 public class DummyHttpRequest implements AbstractHttpRequest<DummyHttpRequest>{
