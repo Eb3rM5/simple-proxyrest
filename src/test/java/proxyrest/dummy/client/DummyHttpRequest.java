@@ -1,5 +1,6 @@
 package proxyrest.dummy.client;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map;
 
 import proxyrest.client.AbstractHttpRequest;
 import proxyrest.handler.ResponseHandler;
+import proxyrest.handler.request.RequestBodyHandler;
 
 public class DummyHttpRequest implements AbstractHttpRequest<DummyHttpRequest>{
 
@@ -15,7 +17,11 @@ public class DummyHttpRequest implements AbstractHttpRequest<DummyHttpRequest>{
 	public final List<String> paths;
 	public final Map<String, String> queryParameters;
 	public final Map<String, String> headers;
+	private Object content;
+	private String contentType; 
+	
 	private ResponseHandler responseHandler;
+	private RequestBodyHandler requestBodyHandler;
 	
 	public DummyHttpRequest() {
 		url = "";
@@ -54,6 +60,16 @@ public class DummyHttpRequest implements AbstractHttpRequest<DummyHttpRequest>{
 	public void setResponseHandler(ResponseHandler responseHandler) {
 		this.responseHandler = responseHandler; 
 	}
+	
+	@Override
+	public void setContent(Object content) {
+		this.content = content;
+	}
+	
+	@Override
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
 
 	public String getUrl() {
 		return url;
@@ -75,6 +91,14 @@ public class DummyHttpRequest implements AbstractHttpRequest<DummyHttpRequest>{
 		return headers;
 	}
 	
+	public Object getContent() {
+		return content;
+	}
+	
+	public String getContentType() {
+		return contentType;
+	}
+	
 	@Override
 	public ResponseHandler getResponseHandler() {
 		return responseHandler;
@@ -83,6 +107,20 @@ public class DummyHttpRequest implements AbstractHttpRequest<DummyHttpRequest>{
 	@Override
 	public DummyHttpRequest build() {
 		return this;
+	}
+
+	@Override
+	public void setRequestBodyHandler(RequestBodyHandler requestBodyHandler) {
+		this.requestBodyHandler = requestBodyHandler;
+	}
+	
+	public String getBodyAsString() {
+		if (requestBodyHandler != null) {
+			final ByteArrayOutputStream output = new ByteArrayOutputStream();
+			requestBodyHandler.handleRequestBody(this, content, output);
+			return new String(output.toByteArray());
+		}
+		return null;
 	}
 	
 }

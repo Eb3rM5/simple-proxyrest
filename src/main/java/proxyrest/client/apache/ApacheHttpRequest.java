@@ -5,20 +5,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.io.entity.HttpEntities;
 import org.apache.hc.core5.http.io.support.ClassicRequestBuilder;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.apache.hc.core5.net.URIBuilder;
 
 import proxyrest.client.AbstractHttpRequest;
 import proxyrest.handler.ResponseHandler;
+import proxyrest.handler.request.RequestBodyHandler;
 
 public class ApacheHttpRequest implements AbstractHttpRequest<ClassicHttpRequest>{
 
 	private String method;
 	private ResponseHandler responseHandler;
 	private URIBuilder uriBuilder;
+	private Object content;
+	private String contentType;
 	private final List<Header> headers;
+	
+	private RequestBodyHandler requestBodyHandler;
 	
 	ApacheHttpRequest() {
 		this.headers = new ArrayList<>();
@@ -66,7 +73,32 @@ public class ApacheHttpRequest implements AbstractHttpRequest<ClassicHttpRequest
 	public ResponseHandler getResponseHandler() {
 		return responseHandler;
 	}
+	
+	@Override
+	public void setContent(Object content) {
+		this.content = content;
+	}
+	
+	@Override
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
+	
+	@Override
+	public Object getContent() {
+		return content;
+	}
+	
+	@Override
+	public String getContentType() {
+		return contentType;
+	}
 
+	@Override
+	public void setRequestBodyHandler(RequestBodyHandler requestBodyHandler) {
+		this.requestBodyHandler = requestBodyHandler;
+	}
+	
 	@Override
 	public ClassicHttpRequest build() {
 		try {
@@ -75,11 +107,18 @@ public class ApacheHttpRequest implements AbstractHttpRequest<ClassicHttpRequest
 			if (!headers.isEmpty()) {
 				builder.setHeaders(headers.iterator());
 			}
+			if (requestBodyHandler != null) {
+				builder.setEntity(HttpEntities.create(
+										output -> requestBodyHandler.handleRequestBody(this, content, output),
+										ContentType.parse(contentType)
+										));
+			}
 			return builder.build();
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
+
+
 }

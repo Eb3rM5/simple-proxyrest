@@ -1,6 +1,7 @@
 package proxyrest.client;
 
 import proxyrest.handler.ResponseHandler;
+import proxyrest.handler.request.RequestBodyHandler;
 
 public interface AbstractHttpRequest<T> {
 	
@@ -16,7 +17,17 @@ public interface AbstractHttpRequest<T> {
 	
 	void setResponseHandler(ResponseHandler responseHandler);
 	
+	void setRequestBodyHandler(RequestBodyHandler requestBodyHandler);
+	
+	void setContent(Object content);
+	
+	void setContentType(String contentType);
+	
 	ResponseHandler getResponseHandler();
+	
+	Object getContent();
+	
+	String getContentType();
 	
 	T build();
 	
