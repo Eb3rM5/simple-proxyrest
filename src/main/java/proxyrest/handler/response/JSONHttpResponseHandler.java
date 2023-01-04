@@ -29,7 +29,7 @@ public class JSONHttpResponseHandler implements ResponseHandler {
 		InputStream input = response.openStream();
 		if (input != null) {
 			try (input) {
-				return mapper.readValue(input, mapper.constructType(method.getGenericReturnType()));
+ 				return mapper.readValue(input, mapper.constructType(method.getGenericReturnType()));
 			} catch (UnsupportedOperationException | IOException e) {
 				e.printStackTrace();
 				return null;
