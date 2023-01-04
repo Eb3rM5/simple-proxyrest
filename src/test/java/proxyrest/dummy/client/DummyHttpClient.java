@@ -32,7 +32,8 @@ public class DummyHttpClient<R extends DummyRepository<?>> implements AbstractHt
 			Object data = handler.handleRequest(request, repository);
 			if (data != null) {
 				try {
-					return new DummyHttpResponse(STATUS_OK, JSON_CONTENT_TYPE, mapper.writeValueAsString(data), request);
+					String response = data.getClass().equals(String.class) ? (String)data : mapper.writeValueAsString(data);
+					return new DummyHttpResponse(STATUS_OK, JSON_CONTENT_TYPE, response, request);
 				} catch (JsonProcessingException e) {
 					e.printStackTrace();
 				}
