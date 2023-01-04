@@ -12,9 +12,9 @@ public class DummyHttpRequest implements AbstractHttpRequest<DummyHttpRequest>{
 
 	private String url;
 	private String method;
-	private List<String> paths;
-	private Map<String, String> queryParameters;
-	private Map<String, String> headers;
+	public final List<String> paths;
+	public final Map<String, String> queryParameters;
+	public final Map<String, String> headers;
 	private ResponseHandler responseHandler;
 	
 	public DummyHttpRequest() {

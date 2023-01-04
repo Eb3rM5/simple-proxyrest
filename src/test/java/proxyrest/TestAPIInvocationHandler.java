@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import proxyrest.advice.api.Endpoint;
+import proxyrest.advice.param.PathParam;
 import proxyrest.advice.param.QueryParam;
 import proxyrest.advice.route.GetMapping;
 import proxyrest.dummy.client.DummyHttpClient;
@@ -22,10 +23,10 @@ import proxyrest.dummy.repository.DummyUserRepository;
 public class TestAPIInvocationHandler {
 	
 	@Test
-	public void testQueryParamAnnotationWhenReturningAList() {
-		var api = createTestAPI((request, repository) -> repository.findByOccupation(request.getQueryParameters().get("occupation")));
+	public void queryParamListReturn() {
+		var api = createTestAPI((request, repository) -> repository.findByOccupation(request.queryParameters.get("occupation")));
 		
-		List<String> users = api.getUsersByOccupation("Software Engineer").stream()
+		List<String> users = api.getUsersByOccupationWithQueryParam("Software Engineer").stream()
 												.map(user -> user.name())
 													.collect(Collectors.toList());
 		assertTrue(users.contains("Amanda"));
@@ -34,21 +35,44 @@ public class TestAPIInvocationHandler {
 	}
 	
 	@Test
-	public void testQueryParamAnnotation() {
-		var api = createTestAPI((request, repository) -> repository.findById(request.getQueryParameters().get("userId")));
-		assertEquals(api.getUser("2").name(), "Lauren");
-		assertEquals(api.getUser("5").name(), "John");
-		assertNotEquals(api.getUser("7").name(), "Yasmin");
+	public void queryParamSingleReturn() {
+		var api = createTestAPI((request, repository) -> repository.findById(request.queryParameters.get("userId")));
+		assertEquals(api.getUserWithQueryParam("2").name(), "Lauren");
+		assertEquals(api.getUserWithQueryParam("5").name(), "John");
+		assertNotEquals(api.getUserWithQueryParam("7").name(), "Yasmin");
+	}
+	
+	@Test
+	public void pathParamListReturn() {
+		var api = createTestAPI((request, repository) -> repository.findByOccupation(request.paths.get(1)));
+		List<String> users = api.getUsersByOccupationWithPath("Software Engineer").stream()
+														.map(user -> user.name())
+															.collect(Collectors.toList());
+		assertTrue(users.contains("Amanda"));
+		assertTrue(users.contains("Will"));
+		assertFalse(users.contains("Lauren"));
+	}
+	
+	@Test
+	public void pathParamSingleReturn() {
+		var api = createTestAPI((request, repository) -> repository.findById(request.paths.get(1)));
+		assertEquals(api.getUserWithPath("6").name(), "Will");
 	}
 	
 	@Endpoint(value = "http://nonexistent.endpoint.com")
 	public static interface DummyTestAPI extends RestAPI {
 
 		@GetMapping(mapping = "/users")
-		public User getUser(@QueryParam(name = "userId") String userId);
+		public User getUserWithPath(@PathParam String userId);
+
+		@GetMapping(mapping = "/occupation")
+		public List<User> getUsersByOccupationWithPath(@PathParam String occupation);
 		
 		@GetMapping(mapping = "/users")
-		public List<User> getUsersByOccupation(@QueryParam(name = "occupation") String occupation);
+		public User getUserWithQueryParam(@QueryParam(name = "userId") String userId);
+		
+		@GetMapping(mapping = "/users")
+		public List<User> getUsersByOccupationWithQueryParam(@QueryParam(name = "occupation") String occupation);
 		
 	}
 	
