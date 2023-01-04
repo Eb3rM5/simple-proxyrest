@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DummyUserRepository {
+import proxyrest.dummy.repository.DummyUserRepository.DummyUser;
+
+public class DummyUserRepository implements DummyRepository<DummyUser> {
 
 	private final List<DummyUser> users;
 	
@@ -12,9 +14,10 @@ public class DummyUserRepository {
 		users = new ArrayList<>();
 	}
 	
-	public DummyUser findById(int id) {
+	@Override
+	public DummyUser findById(String id) {
 		return users.stream()
-					.filter(user -> user.id == id)
+					.filter(user -> user.id != null && user.id.equals(id))
 					.findFirst()
 					.orElse(null);
 	}
@@ -25,15 +28,16 @@ public class DummyUserRepository {
 				.collect(Collectors.toList());
 	}
 	
-	public void save(int id, String user, String occupation) {
+	public void save(String id, String user, String occupation) {
 		save(new DummyUser(id, user, occupation));
 	}
 	
+	@Override
 	public void save(DummyUser user) {
 		users.add(user);
 	}
 	
-	public static record DummyUser(int id, String name, String occupation) {
+	public static record DummyUser(String id, String name, String occupation) {
 	}
 	
 }
