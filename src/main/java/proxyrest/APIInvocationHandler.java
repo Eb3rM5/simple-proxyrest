@@ -54,7 +54,7 @@ public class APIInvocationHandler<C extends AbstractHttpClient<I, O>, I extends 
 	}
 	
 	protected Object handleResponse(O response, ResponseHandler responseHandler, Method method, Object[] args) {
-		if (responseHandler == null) responseHandler = responseHandlerFactory.getDefaultResponseHandler();
+		if (responseHandler == null) responseHandler = responseHandlerFactory.getDefault();
 		return responseHandler.handleResponse(response, responseHandler, method, method.getReturnType(), args);
 	}
 	
