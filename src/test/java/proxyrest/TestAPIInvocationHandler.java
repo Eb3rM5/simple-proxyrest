@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,7 +16,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import proxyrest.advice.api.Endpoint;
 import proxyrest.advice.param.PathParam;
 import proxyrest.advice.param.QueryParam;
+import proxyrest.advice.param.RequestBody;
 import proxyrest.advice.route.GetMapping;
+import proxyrest.advice.route.Route;
 import proxyrest.dummy.client.DummyHttpClient;
 import proxyrest.dummy.client.DummyHttpClient.DummyRequestHandler;
 import proxyrest.dummy.repository.DummyUserRepository;
@@ -59,6 +62,27 @@ public class TestAPIInvocationHandler {
 		assertEquals(api.getUserWithPath("6").name(), "Will");
 	}
 	
+	@Test
+	public void echoRequestBodyContent() {
+		var api = createTestAPI((request, repository) -> request.getBodyAsString());
+		
+		final DummyReturnMessage message = api.postMessageWithRequestBody(new DummyMessage("Ok", "200"));
+		assertEquals(message.message(), "Ok");
+	}
+	
+	@Test
+	public void echoRequestListReturn() {
+		var api = createTestAPI((request, repository) -> request.getBodyAsString());
+		
+		final List<DummyReturnMessage> messages = api.postMessagesWithRequestBody(Arrays.asList(new DummyMessage("Ok", "200"), new DummyMessage("Warn", "200")));
+		final List<String> texts = messages.stream()
+												.map(message -> message.message())
+													.collect(Collectors.toList());
+
+		assertTrue(texts.contains("Ok"));
+		assertTrue(texts.contains("Warn"));
+	}
+	
 	@Endpoint(value = "http://nonexistent.endpoint.com")
 	public static interface DummyTestAPI extends RestAPI {
 
@@ -73,6 +97,12 @@ public class TestAPIInvocationHandler {
 		
 		@GetMapping(mapping = "/users")
 		public List<User> getUsersByOccupationWithQueryParam(@QueryParam(name = "occupation") String occupation);
+		
+		@Route(mapping = "/message", method = "POST")
+		public DummyReturnMessage postMessageWithRequestBody(@RequestBody(contentType = "application/json") DummyMessage message);
+		
+		@Route(mapping = "/messages", method = "POST")
+		public List<DummyReturnMessage> postMessagesWithRequestBody(@RequestBody(contentType = "application/json") List<DummyMessage> message);
 		
 	}
 	
@@ -92,6 +122,13 @@ public class TestAPIInvocationHandler {
 	
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public static record User(String name, String occupation) {
+	}
+	
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static record DummyReturnMessage(String message) {
+	}
+	
+	public static record DummyMessage(String message, String status) {
 	}
 	
 }
